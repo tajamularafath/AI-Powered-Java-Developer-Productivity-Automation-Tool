@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Powered Java Developer Productivity & Automation Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #1f2937;
+      --bg-accent: #374151;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --brand: #3b82f6;
+      --brand-hover: #2563eb;
+      --brand-glow: rgba(59, 130, 246, 0.35);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #8b5cf6;
+      --border: #374151;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      box-shadow: 0 0 15px var(--brand-glow);
+    }
+
+    .logo-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    nav {
+      display: flex;
+      gap: 0.5rem;
+      background-color: var(--bg-secondary);
+      padding: 0.35rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 7px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-btn.active {
+      background-color: var(--brand);
+      color: #ffffff;
+      box-shadow: 0 0 12px var(--brand-glow);
+    }
+
+    .nav-btn:hover:not(.active) {
+      color: var(--text-main);
+      background-color: var(--bg-accent);
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards & Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+
+    .card-header h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Form controls */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px var(--brand-glow);
+    }
+
+    textarea.code-editor {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      min-height: 360px;
+      resize: vertical;
+      white-space: pre;
+    }
+
+    .btn {
+      background-color: var(--brand);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--brand-hover);
+      box-shadow: 0 0 16px var(--brand-glow);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-accent);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: #4b5563;
+      box-shadow: none;
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+    }
+
+    /* Metric Badges & Pills */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .metric-card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--brand), var(--purple));
+    }
+
+    .metric-card .title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .metric-card .subtitle {
+      font-size: 0.75rem;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Artifact Viewers */
+    .artifact-tabs {
+      display: flex;
+      gap: 0.35rem;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+      padding-bottom: 0.35rem;
+    }
+
+    .artifact-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .artifact-tab.active {
+      background-color: var(--bg-accent);
+      color: var(--text-main);
+      border-color: var(--border);
+    }
+
+    pre.code-block {
+      background-color: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.825rem;
+      line-height: 1.55;
+      max-height: 520px;
+      color: #e6edf3;
+    }
+
+    /* Issues Table */
+    .issue-item {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-CRITICAL { background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+    .badge-HIGH { background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+    .badge-MEDIUM { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6; }
+    .badge-LOW { background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
+
+    .score-dial {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--brand);
+      text-align: center;
+      padding: 1rem;
+      border-radius: 12px;
+      background-color: rgba(59, 130, 246, 0.08);
+      border: 1px dashed var(--brand);
+      margin-bottom: 1rem;
+    }
+
+    .tag-pill {
+      background: var(--bg-accent);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">
+        <h1>JavaDevAI Automation Tool</h1>
+        <p>Spring Boot 3 + MySQL Developer Productivity Engine</p>
+      </div>
+    </div>
+    <nav>
+      <button class="nav-btn active" onclick="switchTab('scaffold')">🚀 Spec-to-Code Pipeline</button>
+      <button class="nav-btn" onclick="switchTab('audit')">🛡️ Code Review & Security Audit</button>
+      <button class="nav-btn" onclick="switchTab('tests')">🧪 Test Synthesizer</button>
+      <button class="nav-btn" onclick="switchTab('metrics')">📊 Productivity & ROI</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- TAB 1: FULL SPEC-TO-CODE WORKFLOW -->
+    <div id="tab-scaffold" class="tab-content active">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2>⚙️ Domain Model Specification</h2>
+            <span class="tag-pill">End-to-End Orchestrator</span>
+          </div>
+          <div class="form-group">
+            <label>Entity Name</label>
+            <input type="text" id="scaffoldEntity" value="Product" placeholder="e.g. Order, Customer, Invoice" />
+          </div>
+          <div class="form-group">
+            <label>Base Package</label>
+            <input type="text" id="scaffoldPackage" value="com.example.inventory" />
+          </div>
+          <div class="form-group">
+            <label>Module Description</label>
+            <input type="text" id="scaffoldDesc" value="Enterprise catalog and inventory management entity" />
+          </div>
+
+          <label>Entity Attributes (Schema)</label>
+          <div id="fieldsContainer">
+            <!-- Dynamic fields -->
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="addField()" style="margin-bottom: 1.25rem;">+ Add Attribute</button>
+
+          <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+            <button class="btn" onclick="runScaffoldingWorkflow()" id="btnRunScaffold">
+              <span>⚡</span> Execute Automation Workflow
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>📦 Synthesized Production Artifacts</h2>
+            <div id="workflowTimer" style="font-size: 0.8rem; color: var(--text-muted);">Ready</div>
+          </div>
+
+          <div id="scaffoldStatus" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 8px; background: var(--bg-primary); font-size: 0.85rem;">
+            Configure your domain model on the left and click <b>Execute Automation Workflow</b>.
+          </div>
+
+          <div class="artifact-tabs" id="artifactTabsContainer">
+            <!-- Generated Artifact Tabs -->
+          </div>
+
+          <div style="position: relative;">
+            <button class="btn btn-secondary btn-sm" onclick="copyActiveArtifact()" style="position: absolute; right: 10px; top: 10px; z-index: 10;">📋 Copy Code</button>
+            <pre class="code-block" id="artifactCodeViewer">// Synthesized Java / SQL code will appear here...</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: CODE AUDIT & REVIEW -->
+    <div id="tab-audit" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2>🔍 Source Code Inspector</h2>
+            <button class="btn btn-secondary btn-sm" onclick="loadFlawedCodeSample()">Load Flawed Code Sample</button>
+          </div>
+          <div class="form-group">
+            <label>Class Name</label>
+            <input type="text" id="auditClassName" value="OrderProcessingService" />
+          </div>
+          <div class="form-group">
+            <label>Java Source Code</label>
+            <textarea class="code-editor" id="auditSourceCode" placeholder="Paste Java class code here for real-time security, performance, and anti-pattern audit..."></textarea>
+          </div>
+          <button class="btn" onclick="runCodeAudit()" id="btnRunAudit">
+            <span>🛡️</span> Run Code Review & Security Audit
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>📋 Audit Report & Remediation</h2>
+            <span class="tag-pill" id="auditScorePill">Awaiting Audit</span>
+          </div>
+          <div id="auditScoreBox" class="score-dial" style="display:none;">100 / 100</div>
+          <div id="auditSummaryText" style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+            Paste code and trigger audit to scan for N+1 queries, SQL injection, unsafe Optional access, and missing transaction boundaries.
+          </div>
+          <div id="auditIssuesList">
+            <!-- Issues list -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: TEST SYNTHESIS -->
+    <div id="tab-tests" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2>🧪 Test Suite Specification</h2>
+            <button class="btn btn-secondary btn-sm" onclick="loadSampleServiceCode()">Load Sample Service</button>
+          </div>
+          <div class="form-group">
+            <label>Target Class Name</label>
+            <input type="text" id="testTargetClass" value="CustomerService" />
+          </div>
+          <div class="form-group">
+            <label>Package</label>
+            <input type="text" id="testTargetPackage" value="com.example.service" />
+          </div>
+          <div class="form-group">
+            <label>Service Implementation Code</label>
+            <textarea class="code-editor" id="testSourceCode" placeholder="Paste service implementation code here..."></textarea>
+          </div>
+          <button class="btn" onclick="runTestSynthesis()" id="btnRunTests">
+            <span>⚡</span> Synthesize JUnit 5 + Mockito Tests
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>📑 Synthesized Test Suite</h2>
+            <button class="btn btn-secondary btn-sm" onclick="copyElementText('testOutputViewer')">📋 Copy Test Code</button>
+          </div>
+          <pre class="code-block" id="testOutputViewer">// Synthesized JUnit 5 tests will appear here...</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: PRODUCTIVITY & ROI DASHBOARD -->
+    <div id="tab-metrics" class="tab-content">
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="title">Total Hours Saved</div>
+          <div class="value" id="mHoursSaved">0.0 hrs</div>
+          <div class="subtitle">🚀 High Developer Velocity</div>
+        </div>
+        <div class="metric-card">
+          <div class="title">Workflows Executed</div>
+          <div class="value" id="mWorkflows">0</div>
+          <div class="subtitle">✅ 100% Success Rate</div>
+        </div>
+        <div class="metric-card">
+          <div class="title">Lines of Code Generated</div>
+          <div class="value" id="mLoc">0</div>
+          <div class="subtitle">📦 Clean Enterprise Spring Boot</div>
+        </div>
+        <div class="metric-card">
+          <div class="title">Tests Synthesized</div>
+          <div class="value" id="mTests">0</div>
+          <div class="subtitle">🧪 JUnit 5 + Mockito</div>
+        </div>
+        <div class="metric-card">
+          <div class="title">Vulnerabilities Prevented</div>
+          <div class="value" id="mVuln">0</div>
+          <div class="subtitle">🛡️ Security & Performance</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>🕒 Recent Automation Executions</h2>
+          <button class="btn btn-secondary btn-sm" onclick="refreshMetrics()">🔄 Refresh Stats</button>
+        </div>
+        <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.9rem;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
+              <th style="padding: 0.75rem;">ID</th>
+              <th style="padding: 0.75rem;">Workflow</th>
+              <th style="padding: 0.75rem;">Type</th>
+              <th style="padding: 0.75rem;">Duration</th>
+              <th style="padding: 0.75rem;">Time Saved</th>
+              <th style="padding: 0.75rem;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="workflowHistoryTable">
+            <!-- History rows -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+      if (tabId === 'metrics') refreshMetrics();
+    }
+
+    // Dynamic field management
+    let fields = [
+      { name: "title", type: "String", primaryKey: false, nullable: false, validationRules: "@NotBlank", description: "Item title" },
+      { name: "sku", type: "String", primaryKey: false, nullable: false, validationRules: "@NotBlank", unique: true, description: "Unique stock keeping unit" },
+      { name: "price", type: "BigDecimal", primaryKey: false, nullable: false, validationRules: "@PositiveOrZero", description: "Price tag" },
+      { name: "quantity", type: "Integer", primaryKey: false, nullable: false, validationRules: "@Min(0)", description: "Stock count" },
+      { name: "active", type: "Boolean", primaryKey: false, nullable: true, validationRules: "", description: "Active state" }
+    ];
+
+    function renderFields() {
+      const container = document.getElementById('fieldsContainer');
+      container.innerHTML = '';
+      fields.forEach((f, idx) => {
+        const row = document.createElement('div');
+        row.style = "display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center;";
+        row.innerHTML = `
+          <input type="text" style="flex:2;" value="${f.name}" placeholder="Field name" onchange="fields[${idx}].name = this.value" />
+          <select style="flex:2;" onchange="fields[${idx}].type = this.value">
+            <option value="String" ${f.type==='String'?'selected':''}>String</option>
+            <option value="Long" ${f.type==='Long'?'selected':''}>Long</option>
+            <option value="Integer" ${f.type==='Integer'?'selected':''}>Integer</option>
+            <option value="BigDecimal" ${f.type==='BigDecimal'?'selected':''}>BigDecimal</option>
+            <option value="Boolean" ${f.type==='Boolean'?'selected':''}>Boolean</option>
+            <option value="LocalDateTime" ${f.type==='LocalDateTime'?'selected':''}>LocalDateTime</option>
+          </select>
+          <input type="text" style="flex:2;" value="${f.validationRules||''}" placeholder="Validation" onchange="fields[${idx}].validationRules = this.value" />
+          <button class="btn btn-secondary btn-sm" style="color:var(--danger);" onclick="removeField(${idx})">×</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function addField() {
+      fields.push({ name: "newField", type: "String", primaryKey: false, nullable: true, validationRules: "" });
+      renderFields();
+    }
+
+    function removeField(idx) {
+      fields.splice(idx, 1);
+      renderFields();
+    }
+
+    renderFields();
+
+    // Scaffolding Workflow Execution
+    let currentArtifacts = [];
+    let activeArtifactIdx = 0;
+
+    async function runScaffoldingWorkflow() {
+      const btn = document.getElementById('btnRunScaffold');
+      btn.disabled = true;
+      btn.innerHTML = '⚡ Synthesizing Architecture...';
+      document.getElementById('scaffoldStatus').innerHTML = '<span style="color:var(--brand)">Executing multi-step autonomous workflow pipeline...</span>';
+
+      const payload = {
+        entityName: document.getElementById('scaffoldEntity').value.trim(),
+        basePackage: document.getElementById('scaffoldPackage').value.trim(),
+        description: document.getElementById('scaffoldDesc').value.trim(),
+        fields: fields,
+        generateDto: true,
+        generateService: true,
+        generateController: true,
+        generateDdl: true,
+        generateTests: true,
+        runQualityAudit: true
+      };
+
+      try {
+        const res = await fetch('/api/v1/workflows/scaffold', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (json.success) {
+          const wf = json.data;
+          currentArtifacts = wf.artifacts;
+          document.getElementById('workflowTimer').innerText = `⚡ ${wf.totalExecutionTimeMs} ms | ~${wf.estimatedMinutesSaved} min saved`;
+          document.getElementById('scaffoldStatus').innerHTML = `
+            <div style="color:var(--success); font-weight:600;">✅ Workflow Complete: ${wf.workflowName}</div>
+            <div style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">${wf.outputSummary}</div>
+          `;
+          renderArtifactTabs();
+        } else {
+          document.getElementById('scaffoldStatus').innerHTML = `<span style="color:var(--danger)">Workflow failed: ${json.message}</span>`;
+        }
+      } catch (err) {
+        document.getElementById('scaffoldStatus').innerHTML = `<span style="color:var(--danger)">Error: ${err.message}</span>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>⚡</span> Execute Automation Workflow';
+      }
+    }
+
+    function renderArtifactTabs() {
+      const tabs = document.getElementById('artifactTabsContainer');
+      tabs.innerHTML = '';
+      currentArtifacts.forEach((art, idx) => {
+        const b = document.createElement('button');
+        b.className = 'artifact-tab ' + (idx === 0 ? 'active' : '');
+        b.innerText = art.fileName;
+        b.onclick = () => showArtifact(idx);
+        tabs.appendChild(b);
+      });
+      showArtifact(0);
+    }
+
+    function showArtifact(idx) {
+      activeArtifactIdx = idx;
+      document.querySelectorAll('.artifact-tab').forEach((el, i) => {
+        el.classList.toggle('active', i === idx);
+      });
+      if (currentArtifacts[idx]) {
+        document.getElementById('artifactCodeViewer').textContent = currentArtifacts[idx].content;
+      }
+    }
+
+    function copyActiveArtifact() {
+      if (currentArtifacts[activeArtifactIdx]) {
+        navigator.clipboard.writeText(currentArtifacts[activeArtifactIdx].content);
+        alert('Artifact copied to clipboard!');
+      }
+    }
+
+    function copyElementText(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text);
+      alert('Copied to clipboard!');
+    }
+
+    // Code Audit
+    function loadFlawedCodeSample() {
+      document.getElementById('auditClassName').value = "OrderProcessingService";
+      document.getElementById('auditSourceCode').value = `@Service
+public class OrderProcessingService {
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    private String apiKey = "AIzaSyD-93847293847secretKey";
+
+    public Order getOrderById(Long id) {
+        // Unsafe Optional.get() without null check
+        return orderRepository.findById(id).get();
+    }
+
+    public List findOrders(String customerName) {
+        // SQL Injection vulnerability via concatenation
+        String query = "SELECT o FROM Order o WHERE o.customer = '" + customerName + "'";
+        return orderRepository.runQuery(query);
+    }
+
+    public void processAllOrders(List<Long> orderIds) {
+        // N+1 Query in loop
+        for (Long id : orderIds) {
+            Order o = orderRepository.findById(id).get();
+            o.setStatus("PROCESSED");
+            orderRepository.save(o);
+        }
+    }
+}`;
+    }
+
+    async function runCodeAudit() {
+      const btn = document.getElementById('btnRunAudit');
+      btn.disabled = true;
+      btn.innerHTML = '🛡️ Inspecting Code...';
+
+      const payload = {
+        className: document.getElementById('auditClassName').value.trim(),
+        sourceCode: document.getElementById('auditSourceCode').value
+      };
+
+      try {
+        const res = await fetch('/api/v1/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (json.success) {
+          const report = json.data;
+          const scoreBox = document.getElementById('auditScoreBox');
+          scoreBox.style.display = 'block';
+          scoreBox.innerText = report.overallScore + ' / 100';
+          scoreBox.style.color = report.overallScore >= 80 ? 'var(--success)' : report.overallScore >= 50 ? 'var(--warning)' : 'var(--danger)';
+
+          document.getElementById('auditSummaryText').innerHTML = `<b>Executive Summary:</b> ${report.executiveSummary}`;
+
+          const list = document.getElementById('auditIssuesList');
+          list.innerHTML = '';
+          report.issues.forEach(iss => {
+            const div = document.createElement('div');
+            div.className = 'issue-item';
+            div.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge badge-${iss.severity}">${iss.severity}</span>
+                <span style="font-size:0.75rem; color:var(--text-muted);">${iss.category} | Line ${iss.lineNumber}</span>
+              </div>
+              <div style="font-weight:600; font-size:0.875rem;">${iss.ruleName}</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">${iss.issueDescription}</div>
+              <div style="font-family:'Fira Code', monospace; font-size:0.75rem; background:#000; padding:6px; border-radius:4px; color:#f87171;">
+                ${iss.lineSnippet}
+              </div>
+              <div style="font-size:0.8rem; color:var(--success); margin-top:2px;">
+                <b>Remediation:</b> ${iss.remediationGuidance}
+              </div>
+            `;
+            list.appendChild(div);
+          });
+        }
+      } catch (err) {
+        alert('Audit failed: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🛡️</span> Run Code Review & Security Audit';
+      }
+    }
+
+    // Test Synthesizer
+    function loadSampleServiceCode() {
+      document.getElementById('testTargetClass').value = "CustomerService";
+      document.getElementById('testTargetPackage').value = "com.example.service";
+      document.getElementById('testSourceCode').value = `@Service
+public class CustomerServiceImpl implements CustomerService {
+    private final CustomerRepository customerRepository;
+
+    public CustomerServiceImpl(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+
+    public CustomerResponseDto findById(Long id) {
+        return customerRepository.findById(id)
+            .map(CustomerResponseDto::fromEntity)
+            .orElseThrow(() -> new RuntimeException("Customer not found"));
+    }
+
+    public CustomerResponseDto create(CustomerRequestDto dto) {
+        return CustomerResponseDto.fromEntity(customerRepository.save(new Customer()));
+    }
+}`;
+    }
+
+    async function runTestSynthesis() {
+      const btn = document.getElementById('btnRunTests');
+      btn.disabled = true;
+      btn.innerHTML = '🧪 Synthesizing Tests...';
+
+      const payload = {
+        targetClassName: document.getElementById('testTargetClass').value.trim(),
+        targetPackage: document.getElementById('testTargetPackage').value.trim(),
+        sourceCode: document.getElementById('testSourceCode').value,
+        targetLayer: "SERVICE"
+      };
+
+      try {
+        const res = await fetch('/api/v1/tests/synthesize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (json.success) {
+          document.getElementById('testOutputViewer').textContent = json.data.generatedTestCode;
+        }
+      } catch (err) {
+        alert('Test synthesis failed: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>⚡</span> Synthesize JUnit 5 + Mockito Tests';
+      }
+    }
+
+    // Productivity & Metrics
+    async function refreshMetrics() {
+      try {
+        const res = await fetch('/api/v1/analytics/dashboard');
+        const json = await res.json();
+        if (json.success) {
+          const d = json.data;
+          document.getElementById('mHoursSaved').innerText = d.totalHoursSaved + ' hrs';
+          document.getElementById('mWorkflows').innerText = d.totalWorkflowsExecuted;
+          document.getElementById('mLoc').innerText = d.totalLinesOfCodeGenerated.toLocaleString();
+          document.getElementById('mTests').innerText = d.totalTestsSynthesized;
+          document.getElementById('mVuln').innerText = d.totalVulnerabilitiesPrevented;
+
+          const tbody = document.getElementById('workflowHistoryTable');
+          tbody.innerHTML = '';
+          d.recentWorkflows.forEach(w => {
+            const tr = document.createElement('tr');
+            tr.style = "border-bottom: 1px solid var(--border);";
+            tr.innerHTML = `
+              <td style="padding:0.75rem; font-family:'Fira Code', monospace;">#${w.id}</td>
+              <td style="padding:0.75rem; font-weight:500;">${w.workflowName}</td>
+              <td style="padding:0.75rem;"><span class="tag-pill">${w.workflowType}</span></td>
+              <td style="padding:0.75rem;">${w.totalExecutionTimeMs} ms</td>
+              <td style="padding:0.75rem; color:var(--success); font-weight:600;">+${w.estimatedMinutesSaved} min</td>
+              <td style="padding:0.75rem;"><span class="badge badge-LOW">${w.status}</span></td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load metrics', err);
+      }
+    }
+
+    // Auto-refresh metrics on load
+    refreshMetrics();
+  </script>
+</body>
+</html>
