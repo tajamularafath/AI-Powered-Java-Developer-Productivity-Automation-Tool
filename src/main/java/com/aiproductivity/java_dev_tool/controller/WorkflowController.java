@@ -43,6 +43,19 @@ public class WorkflowController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @GetMapping("/{id}/bundle")
+    public ResponseEntity<ApiResponse<java.util.Map<String, String>>> getWorkflowBundle(@PathVariable Long id) {
+        WorkflowResponse response = workflowExecutionService.getWorkflowById(id);
+        java.util.Map<String, String> bundle = new java.util.LinkedHashMap<>();
+        if (response.getArtifacts() != null) {
+            for (var artifact : response.getArtifacts()) {
+                String path = artifact.getPackageName().replace('.', '/') + "/" + artifact.getFileName();
+                bundle.put(path, artifact.getContent());
+            }
+        }
+        return ResponseEntity.ok(ApiResponse.success("Bundle retrieved successfully", bundle));
+    }
+
     @GetMapping
     public ResponseEntity<ApiResponse<Page<WorkflowResponse>>> getAllWorkflows(
             @RequestParam(defaultValue = "0") int page,
